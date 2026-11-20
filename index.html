@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FitStrong — сучасний фітнес-клуб для сили, здоров'я та результату.">
+  <title>FitStrong — Performance Gym</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Site CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Trainers carousel CSS — scoped so it can't leak into / clash with style.css -->
+  <style>
+    .trainers-carousel {
+      --carousel-accent: #ff00bb;
+      --carousel-text-dark: #333;
+      --carousel-text-muted: #666;
+      --carousel-bg-light: #f9f9f9;
+      --carousel-speed: 0.4s;
+    }
+
+    .trainers-carousel .carousel-container {
+      position: relative;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      overflow: hidden;
+      padding: 20px 0;
+    }
+
+    .trainers-carousel .carousel-viewport {
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .trainers-carousel .carousel-track {
+      display: flex;
+      gap: 20px;
+      will-change: transform;
+    }
+
+    .trainers-carousel .trainer-card {
+      flex: 0 0 calc((100% - 40px) / 3);
+      background: #fff;
+      border-radius: 16px;
+      box-sizing: border-box;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .trainers-carousel .trainer-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .trainers-carousel .trainer-image {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--carousel-bg-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 3px var(--carousel-accent);
+    }
+
+    .trainers-carousel .trainer-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .trainers-carousel .trainer-avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(135deg, #ff7a50, var(--carousel-accent));
+    }
+
+    .trainers-carousel .trainer-name {
+      font-size: 22px;
+      color: var(--carousel-text-dark);
+      margin: 0 0 8px 0;
+      font-weight: 700;
+    }
+
+    .trainers-carousel .trainer-role {
+      font-size: 14px;
+      color: var(--carousel-accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .trainers-carousel .trainer-desc {
+      font-size: 14px;
+      color: var(--carousel-text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .trainers-carousel .carousel-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #fff;
+      border: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background var(--carousel-speed), transform 0.2s;
+    }
+
+    .trainers-carousel .carousel-nav-btn:hover {
+      background: var(--carousel-accent);
+    }
+
+    .trainers-carousel .carousel-nav-btn:hover svg {
+      fill: #fff;
+    }
+
+    .trainers-carousel .carousel-nav-btn:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .trainers-carousel .carousel-prev-btn { left: 10px; }
+    .trainers-carousel .carousel-next-btn { right: 10px; }
+
+    .trainers-carousel .carousel-nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--carousel-text-dark);
+      transition: fill var(--carousel-speed);
+    }
+
+    @media (max-width: 900px) {
+      .trainers-carousel .trainer-card {
+        flex: 0 0 calc((100% - 20px) / 2);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .trainers-carousel .trainer-card {
+        flex: 0 0 100%;
+      }
+      .trainers-carousel .carousel-nav-btn {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+  <header class="site-header">
+
+    <a href="#home" class="logo" aria-label="FitStrong">
+      <span class="logo-mark">FS</span>
+      <span class="logo-text">
+        <strong>FITSTRONG</strong>
+        <small>PERFORMANCE GYM</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Головна навігація">
+      <a href="#home" data-uk="Головна" data-en="Home">Головна</a>
+      <a href="#about" data-uk="Про нас" data-en="About Us">Про нас</a>
+      <a href="#programs" data-uk="Програми" data-en="Programs">Програми</a>
+      <a href="#trainers" data-uk="Тренери" data-en="Trainers">Тренери</a>
+    </nav>
+
+    <div class="language-switcher" role="group" aria-label="Вибір мови">
+      <button class="language-button active" data-lang="uk" type="button" aria-pressed="true">UA</button>
+      <span>/</span>
+      <button class="language-button" data-lang="en" type="button" aria-pressed="false">EN</button>
+    </div>
+
+    <a href="#join" class="header-button" data-uk="Приєднатися" data-en="Join Now">
+      Приєднатися <span>→</span>
+    </a>
+
+    <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </header>
+
+  <!-- =====================================================
+       MOBILE MENU
+       ===================================================== -->
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Мобільна навігація">
+    <a href="#home" data-uk="Головна" data-en="Home">Головна</a>
+    <a href="#about" data-uk="Про нас" data-en="About Us">Про нас</a>
+    <a href="#programs" data-uk="Програми" data-en="Programs">Програми</a>
+    <a href="#trainers" data-uk="Тренери" data-en="Trainers">Тренери</a>
+    <a href="#join" data-uk="Приєднатися" data-en="Join Now">Приєднатися</a>
+  </nav>
+
+  <!-- =====================================================
+       MAIN
+       ===================================================== -->
+  <main>
+
+    <!-- ================= HERO ================= -->
+    <section id="home" class="hero">
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content">
+        <p class="eyebrow" data-uk="СИЛЬНЕ ТІЛО. СИЛЬНИЙ РОЗУМ. СИЛЬНІШИЙ ТИ." data-en="STRONG BODY. STRONG MIND. STRONGER YOU.">
+          СИЛЬНЕ ТІЛО. СИЛЬНИЙ РОЗУМ. СИЛЬНІШИЙ ТИ.
+        </p>
+
+        <h1>
+          <span data-uk="ТРЕНУЙСЯ НАПОЛЕГЛИВО" data-en="TRAIN HARD">ТРЕНУЙСЯ НАПОЛЕГЛИВО</span><br>
+          <span data-uk="ЗАЛИШАЙСЯ ЗОСЕРЕДЖЕНИМ" data-en="STAY FOCUSED">ЗАЛИШАЙСЯ ЗОСЕРЕДЖЕНИМ</span><br>
+          <span data-uk="БУДЬ СИЛЬНИМ" data-en="BE STRONG">БУДЬ СИЛЬНИМ</span>
+        </h1>
+
+        <p class="hero-description" data-uk="Сучасне обладнання, професійні тренери та спільнота, яка допоможе тобі стати найкращою версією себе." data-en="World class equipment, expert coaches and a community that pushes you to be your best.">
+          Сучасне обладнання, професійні тренери та спільнота, яка допоможе тобі стати найкращою версією себе.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#join" class="button button-primary" data-uk="ПРИЄДНАТИСЯ" data-en="JOIN NOW">ПРИЄДНАТИСЯ <span>→</span></a>
+          <a href="#programs" class="button button-outline" data-uk="ПЕРЕГЛЯНУТИ ПРОГРАМИ" data-en="VIEW PROGRAMS">ПЕРЕГЛЯНУТИ ПРОГРАМИ <span>→</span></a>
+        </div>
+      </div>
+
+      <div class="social-rail">
+        <a href="#" aria-label="Facebook">f</a>
+        <a href="#" aria-label="Instagram">◎</a>
+        <a href="#" aria-label="YouTube">▶</a>
+
+        <div class="scroll-label">
+          <span data-uk="ПРОКРУТІТЬ ВНИЗ" data-en="SCROLL DOWN">ПРОКРУТІТЬ ВНИЗ</span>
+          <span>↓</span>
+        </div>
+      </div>
+
+      <div class="hero-features">
+        <article class="feature">
+          <span class="feature-icon">▥</span>
+          <div>
+            <strong data-uk="ТОПОВЕ ОБЛАДНАННЯ" data-en="TOP EQUIPMENT">ТОПОВЕ ОБЛАДНАННЯ</strong>
+            <p data-uk="Якісні тренажери для максимального результату." data-en="High quality machines for ultimate results.">
+              Якісні тренажери для максимального результату.
+            </p>
+          </div>
+        </article>
+
+        <article class="feature">
+          <span class="feature-icon">♙</span>
+          <div>
+            <strong data-uk="ПРОФЕСІЙНІ ТРЕНЕРИ" data-en="EXPERT COACHES">ПРОФЕСІЙНІ ТРЕНЕРИ</strong>
+            <p data-uk="Сертифіковані тренери допоможуть тобі на кожному етапі." data-en="Certified trainers to guide your journey.">
+              Сертифіковані тренери допоможуть тобі на кожному етапі.
+            </p>
+          </div>
+        </article>
+
+        <article class="feature">
+          <span class="feature-icon">♧</span>
+          <div>
+            <strong data-uk="СИЛЬНА СПІЛЬНОТА" data-en="STRONG COMMUNITY">СИЛЬНА СПІЛЬНОТА</strong>
+            <p data-uk="Спільнота, яка підтримує та мотивує тебе." data-en="A supportive community that motivates you.">
+              Спільнота, яка підтримує та мотивує тебе.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= STATISTICS ================= -->
+    <section class="stats" aria-label="Статистика FitStrong">
+      <div class="stat">
+        <strong>15K<span>+</span></strong>
+        <small data-uk="ЗАДОВОЛЕНИХ КЛІЄНТІВ" data-en="HAPPY MEMBERS">ЗАДОВОЛЕНИХ КЛІЄНТІВ</small>
+      </div>
+      <div class="stat">
+        <strong>25<span>+</span></strong>
+        <small data-uk="ПРОФЕСІЙНИХ ТРЕНЕРІВ" data-en="EXPERT COACHES">ПРОФЕСІЙНИХ ТРЕНЕРІВ</small>
+      </div>
+      <div class="stat">
+        <strong>120<span>+</span></strong>
+        <small data-uk="ЗАНЯТЬ ЩОТИЖНЯ" data-en="WEEKLY CLASSES">ЗАНЯТЬ ЩОТИЖНЯ</small>
+      </div>
+      <div class="stat">
+        <strong>8<span>+</span></strong>
+        <small data-uk="ЛОКАЦІЙ" data-en="LOCATIONS">ЛОКАЦІЙ</small>
+      </div>
+    </section>
+
+    <!-- ================= PROGRAMS ================= -->
+    <section id="programs" class="programs section-light">
+
+      <div class="section-intro">
+        <p class="section-label">
+          <span data-uk="НАШІ ПРОГРАМИ" data-en="OUR PROGRAMS">НАШІ ПРОГРАМИ</span>
+        </p>
+
+        <h2>
+          <span data-uk="ФІТНЕС ДЛЯ" data-en="FITNESS FOR">ФІТНЕС ДЛЯ</span><br>
+          <span data-uk="КОЖНОЇ ЦІЛІ" data-en="EVERY GOAL">КОЖНОЇ ЦІЛІ</span>
+        </h2>
+
+        <p data-uk="Хочеш наростити м'язи, схуднути, покращити силу або просто вести здоровіший спосіб життя? У нас є ідеальна програма для тебе." data-en="Whether you want to build muscle, lose weight, improve strength or just live a healthier life, we have the perfect program for you.">
+          Хочеш наростити м'язи, схуднути, покращити силу або просто вести здоровіший спосіб життя? У нас є ідеальна програма для тебе.
+        </p>
+
+        <a href="#trainers" class="dark-button" data-uk="ПЕРЕГЛЯНУТИ ВСІ ПРОГРАМИ" data-en="EXPLORE ALL PROGRAMS">
+          ПЕРЕГЛЯНУТИ ВСІ ПРОГРАМИ <span>→</span>
+        </a>
+      </div>
+
+      <div class="program-grid">
+
+        <article class="program-card">
+          <div class="program-image program-muscle"><span>ϟ</span></div>
+          <div class="program-content">
+            <h3 data-uk="НАБІР М'ЯЗІВ" data-en="MUSCLE BUILDING">НАБІР М'ЯЗІВ</h3>
+            <p data-uk="Нарощуй м'язову масу та збільшуй силу." data-en="Build lean muscle and increase strength.">
+              Нарощуй м'язову масу та збільшуй силу.
+            </p>
+            <a href="#join" data-uk="ДІЗНАТИСЯ БІЛЬШЕ →" data-en="LEARN MORE →">ДІЗНАТИСЯ БІЛЬШЕ →</a>
+          </div>
+        </article>
+
+        <article class="program-card">
+          <div class="program-image program-weight"><span>♧</span></div>
+          <div class="program-content">
+            <h3 data-uk="СХУДНЕННЯ" data-en="WEIGHT LOSS">СХУДНЕННЯ</h3>
+            <p data-uk="Спалюй жир та досягай здорової форми." data-en="Burn fat and achieve a healthier you.">
+              Спалюй жир та досягай здорової форми.
+            </p>
+            <a href="#join" data-uk="ДІЗНАТИСЯ БІЛЬШЕ →" data-en="LEARN MORE →">ДІЗНАТИСЯ БІЛЬШЕ →</a>
+          </div>
+        </article>
+
+        <article class="program-card">
+          <div class="program-image program-strength"><span>ϟ</span></div>
+          <div class="program-content">
+            <h3 data-uk="СИЛОВІ ТРЕНУВАННЯ" data-en="STRENGTH TRAINING">СИЛОВІ ТРЕНУВАННЯ</h3>
+            <p data-uk="Покращуй силу, витривалість та продуктивність." data-en="Improve power, endurance and performance.">
+              Покращуй силу, витривалість та продуктивність.
+            </p>
+            <a href="#join" data-uk="ДІЗНАТИСЯ БІЛЬШЕ →" data-en="LEARN MORE →">ДІЗНАТИСЯ БІЛЬШЕ →</a>
+          </div>
+        </article>
+
+        <article class="program-card">
+          <div class="program-image program-group"><span>♧</span></div>
+          <div class="program-content">
+            <h3 data-uk="ГРУПОВІ ЗАНЯТТЯ" data-en="GROUP CLASSES">ГРУПОВІ ЗАНЯТТЯ</h3>
+            <p data-uk="Енергійні та результативні тренування в групі." data-en="Fun, energetic and result-driven group workouts.">
+              Енергійні та результативні тренування в групі.
+            </p>
+            <a href="#join" data-uk="ДІЗНАТИСЯ БІЛЬШЕ →" data-en="LEARN MORE →">ДІЗНАТИСЯ БІЛЬШЕ →</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ================= ABOUT ================= -->
+    <section id="about" class="about">
+
+      <div class="about-image">
+        <div class="wall-text">
+          <span data-uk="ДИСЦИПЛІНА" data-en="DISCIPLINE">ДИСЦИПЛІНА</span><br>
+          <span data-uk="СЬОГОДНІ" data-en="TODAY">СЬОГОДНІ</span><br>
+          <span class="green-text" data-uk="УСПІХ" data-en="SUCCESS">УСПІХ</span><br>
+          <span data-uk="ЗАВТРА" data-en="TOMORROW">ЗАВТРА</span>
+        </div>
+      </div>
+
+      <div class="about-content">
+        <p class="section-label">
+          <span data-uk="ПРО НАС" data-en="ABOUT US">ПРО НАС</span>
+        </p>
+
+        <h2>
+          <span data-uk="БІЛЬШЕ, НІЖ" data-en="MORE THAN">БІЛЬШЕ, НІЖ</span><br>
+          <span data-uk="ПРОСТО ЗАЛ" data-en="JUST A GYM">ПРОСТО ЗАЛ</span>
+        </h2>
+
+        <p class="about-description" data-uk="Ми — спільнота людей, які прагнуть стати найкращою версією себе. Наша місія — допомогти тобі розкрити свій потенціал завдяки фітнесу, професійному супроводу та підтримці." data-en="We are a community of people who are committed to becoming the best version of themselves. Our mission is to help you unlock your potential through fitness, guidance and support.">
+          Ми — спільнота людей, які прагнуть стати найкращою версією себе. Наша місія — допомогти тобі розкрити свій потенціал завдяки фітнесу, професійному супроводу та підтримці.
+        </p>
+
+        <div class="about-points">
+          <article>
+            <span>♡</span>
+            <strong data-uk="ЗДОРОВИЙ СПОСІБ ЖИТТЯ" data-en="HEALTHY LIFESTYLE">ЗДОРОВИЙ СПОСІБ ЖИТТЯ</strong>
+            <p data-uk="Ми допомагаємо формувати звички для кращого життя." data-en="We promote habits that lead to a better life.">
+              Ми допомагаємо формувати звички для кращого життя.
+            </p>
+          </article>
+
+          <article>
+            <span>◎</span>
+            <strong data-uk="ПЕРСОНАЛЬНИЙ ПЛАН" data-en="PERSONALIZED PLAN">ПЕРСОНАЛЬНИЙ ПЛАН</strong>
+            <p data-uk="Індивідуальні плани відповідно до твоїх цілей." data-en="Custom plans tailored to your goals.">
+              Індивідуальні плани відповідно до твоїх цілей.
+            </p>
+          </article>
+
+          <article>
+            <span>✓</span>
+            <strong data-uk="БЕЗПЕЧНО ТА ЧИСТО" data-en="SAFE & CLEAN">БЕЗПЕЧНО ТА ЧИСТО</strong>
+            <p data-uk="Безпечне, чисте та дружнє середовище." data-en="A safe, clean and friendly environment.">
+              Безпечне, чисте та дружнє середовище.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TRAINERS ================= -->
+    <section id="trainers" class="trainers">
+
+      <h2 class="trainers-title">
+        <span data-uk="НАШІ" data-en="OUR">НАШІ</span>
+        <span data-uk="ТРЕНЕРИ" data-en="TRAINERS">ТРЕНЕРИ</span>
+      </h2>
+
+      <p class="trainers-subtitle" data-uk="У нас найзірковіший тренерський склад. Майстри спорту та кандидати в майстри спорту." data-en="Meet our star coaching lineup — masters of sport and candidates for master of sport.">
+        У нас найзірковіший тренерський склад. Майстри спорту та кандидати в майстри спорту.
+      </p>
+
+      <div class="title-line"></div>
+
+      <div class="trainers-carousel">
+        <div class="carousel-container">
+
+          <button class="carousel-nav-btn carousel-prev-btn" type="button" aria-label="Попередній" data-uk-label="Попередній" data-en-label="Previous">
+            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+          </button>
+          <button class="carousel-nav-btn carousel-next-btn" type="button" aria-label="Наступний" data-uk-label="Наступний" data-en-label="Next">
+            <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </button>
+
+          <div class="carousel-viewport">
+            <div class="carousel-track">
+
+              <div class="trainer-card">
+                <div class="trainer-image">
+                  <div class="trainer-avatar-placeholder">М</div>
+                </div>
+                <h3 class="trainer-name">Михайло</h3>
+                <div class="trainer-role" data-uk="Силовий тренінг" data-en="Strength Training">Силовий тренінг</div>
+                <p class="trainer-desc" data-uk="Експерт з набору м'язової маси та корекції постави. Стаж роботи понад 8 років." data-en="Expert in muscle building and posture correction, with over 8 years of experience.">
+                  Експерт з набору м'язової маси та корекції постави. Стаж роботи понад 8 років.
+                </p>
+              </div>
+
+              <div class="trainer-card">
+                <div class="trainer-image">
+                  <div class="trainer-avatar-placeholder">А</div>
+                </div>
+                <h3 class="trainer-name">Анна</h3>
+                <div class="trainer-role" data-uk="Кардіо та Йога" data-en="Cardio &amp; Yoga">Кардіо та Йога</div>
+                <p class="trainer-desc" data-uk="Спеціалістка зі зниження ваги та розвитку гнучкості. Сертифікована майстриня хатха-йоги." data-en="Specialist in weight loss and flexibility, and a certified Hatha yoga master.">
+                  Спеціалістка зі зниження ваги та розвитку гнучкості. Сертифікована майстриня хатха-йоги.
+                </p>
+              </div>
+
+              <div class="trainer-card">
+                <div class="trainer-image">
+                  <div class="trainer-avatar-placeholder">О</div>
+                </div>
+                <h3 class="trainer-name">Олена</h3>
+                <div class="trainer-role" data-uk="Пілатес / Розтяжка" data-en="Pilates / Stretching">Пілатес / Розтяжка</div>
+                <p class="trainer-desc" data-uk="Допоможе зміцнити м'язовий корсет, покращити мобільність суглобів та відновитися після травм." data-en="Helps strengthen your core, improve joint mobility, and recover from injuries.">
+                  Допоможе зміцнити м'язовий корсет, покращити мобільність суглобів та відновитися після травм.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= JOIN ================= -->
+    <section id="join" class="join">
+      <div class="join-background"></div>
+
+      <div class="join-content">
+        <h2>
+          <span data-uk="ГОТОВИЙ ЗМІНИТИ" data-en="READY TO TRANSFORM">ГОТОВИЙ ЗМІНИТИ</span><br>
+          <span data-uk="СВОЄ ТІЛО ТА ЖИТТЯ?" data-en="YOUR BODY & LIFE?">СВОЄ ТІЛО ТА ЖИТТЯ?</span>
+        </h2>
+
+        <p data-uk="Приєднуйся до FitStrong сьогодні та зроби перший крок до сильнішого, здоровішого та щасливішого життя." data-en="Join FitStrong today and take the first step towards a stronger, healthier, happier you.">
+          Приєднуйся до FitStrong сьогодні та зроби перший крок до сильнішого, здоровішого та щасливішого життя.
+        </p>
+
+        <a href="mailto:hello@fitstrong.example" class="button button-primary" data-uk="ПРИЄДНАТИСЯ" data-en="JOIN NOW">
+          ПРИЄДНАТИСЯ <span>→</span>
+        </a>
+      </div>
+
+      <div class="join-benefits">
+        <div>
+          <span>↗</span>
+          <strong data-uk="БЕЗ ВСТУПНОГО ВНЕСКУ" data-en="NO JOINING FEE">БЕЗ ВСТУПНОГО ВНЕСКУ</strong>
+          <small data-uk="Пропозиція обмежена в часі" data-en="Limited time offer">Пропозиція обмежена в часі</small>
+        </div>
+
+        <div>
+          <span>▣</span>
+          <strong data-uk="БЕЗКОШТОВНИЙ ФІТНЕС-ПЛАН" data-en="FREE FITNESS PLAN">БЕЗКОШТОВНИЙ ФІТНЕС-ПЛАН</strong>
+          <small data-uk="Для всіх нових клієнтів" data-en="For all new members">Для всіх нових клієнтів</small>
+        </div>
+
+        <div>
+          <span>◷</span>
+          <strong data-uk="30 ДНІВ ГАРАНТІЇ ПОВЕРНЕННЯ" data-en="30 DAYS MONEY BACK">30 ДНІВ ГАРАНТІЇ ПОВЕРНЕННЯ</strong>
+          <small data-uk="Без зайвих запитань" data-en="No questions asked">Без зайвих запитань</small>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
+  <footer>
+
+    <div class="footer-brand">
+      <a href="#home" class="logo">
+        <span class="logo-mark">FS</span>
+        <span class="logo-text">
+          <strong>FITSTRONG</strong>
+          <small>PERFORMANCE GYM</small>
+        </span>
+      </a>
+
+      <p data-uk="Трансформуй своє тіло, трансформуй своє життя." data-en="Transform your body, transform your life.">
+        Трансформуй своє тіло, трансформуй своє життя.
+      </p>
+    </div>
+
+    <div class="footer-column">
+      <h3 data-uk="ШВИДКІ ПОСИЛАННЯ" data-en="QUICK LINKS">ШВИДКІ ПОСИЛАННЯ</h3>
+      <a href="#home" data-uk="Головна" data-en="Home">Головна</a>
+      <a href="#about" data-uk="Про нас" data-en="About Us">Про нас</a>
+      <a href="#programs" data-uk="Програми" data-en="Programs">Програми</a>
+      <a href="#trainers" data-uk="Тренери" data-en="Trainers">Тренери</a>
+    </div>
+
+    <div class="footer-column">
+      <h3 data-uk="ПРОГРАМИ" data-en="PROGRAMS">ПРОГРАМИ</h3>
+      <a href="#programs" data-uk="Набір м'язів" data-en="Muscle Building">Набір м'язів</a>
+      <a href="#programs" data-uk="Схуднення" data-en="Weight Loss">Схуднення</a>
+      <a href="#programs" data-uk="Силові тренування" data-en="Strength Training">Силові тренування</a>
+      <a href="#programs" data-uk="CrossFit" data-en="CrossFit">CrossFit</a>
+      <a href="#programs" data-uk="Йога та розтяжка" data-en="Yoga &amp; Stretching">Йога та розтяжка</a>
+    </div>
+
+    <div class="footer-column">
+      <h3 data-uk="ПІДТРИМКА" data-en="SUPPORT">ПІДТРИМКА</h3>
+      <a href="#" data-uk="FAQ" data-en="FAQ">FAQ</a>
+      <a href="#" data-uk="Абонементи" data-en="Membership">Абонементи</a>
+      <a href="#" data-uk="Політика конфіденційності" data-en="Privacy Policy">Політика конфіденційності</a>
+      <a href="#" data-uk="Умови та положення" data-en="Terms &amp; Conditions">Умови та положення</a>
+      <a href="#" data-uk="Політика повернення" data-en="Refund Policy">Політика повернення</a>
+    </div>
+
+    <div class="footer-column">
+      <h3 data-uk="КОНТАКТИ" data-en="CONTACT US">КОНТАКТИ</h3>
+      <address>
+        <a href="https://maps.google.com/?q=вул.+Фітнес,+123,+Київ,+Україна">
+          вул. Фітнес, 123<br>
+          Київ, Україна
+        </a>
+        <a href="tel:+380501234567">+38 (050) 123-45-67</a>
+        <a href="mailto:info@fitstrong.example">info@fitstrong.example</a>
+      </address>
+    </div>
+
+    <p class="copyright">
+      © <span id="year"></span> FitStrong Performance Gym.
+      <span data-uk="Усі права захищені." data-en="All rights reserved.">Усі права захищені.</span>
+    </p>
+
+  </footer>
+
+  <!-- =====================================================
+       JAVASCRIPT
+       ===================================================== -->
+  <script src="script.js"></script>
+
+  <!-- Trainers carousel behaviour (infinite loop, prev/next) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const track = document.querySelector('.trainers-carousel .carousel-track');
+      if (!track) return;
+
+      const cards = Array.from(track.children);
+      const nextBtn = document.querySelector('.trainers-carousel .carousel-next-btn');
+      const prevBtn = document.querySelector('.trainers-carousel .carousel-prev-btn');
+
+      let currentIndex = 0;
+      let isTransitioning = false;
+      const originalLength = cards.length;
+
+      // Clone cards before and after the track to fake infinite looping
+      cards.forEach(card => {
+        track.appendChild(card.cloneNode(true));
+        track.insertBefore(card.cloneNode(true), track.firstChild);
+      });
+
+      currentIndex = originalLength;
+
+      function getCardWidth() {
+        const card = track.querySelector('.trainer-card');
+        const gap = parseInt(window.getComputedStyle(track).gap) || 0;
+        return card.getBoundingClientRect().width + gap;
+      }
+
+      function updatePositionInstant() {
+        track.style.transition = 'none';
+        track.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+      }
+
+      function updatePositionSmooth() {
+        track.style.transition = 'transform 0.4s ease-in-out';
+        track.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+      }
+
+      setTimeout(updatePositionInstant, 50);
+
+      function moveNext() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        currentIndex++;
+        updatePositionSmooth();
+      }
+
+      function movePrev() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        currentIndex--;
+        updatePositionSmooth();
+      }
+
+      nextBtn.addEventListener('click', moveNext);
+      prevBtn.addEventListener('click', movePrev);
+
+      track.addEventListener('transitionend', () => {
+        isTransitioning = false;
+
+        if (currentIndex >= originalLength * 2) {
+          currentIndex = originalLength;
+          updatePositionInstant();
+        }
+        if (currentIndex < originalLength) {
+          currentIndex = originalLength * 2 - 1;
+          updatePositionInstant();
+        }
+      });
+
+      window.addEventListener('resize', updatePositionInstant);
+    });
+  </script>
+
+</body>
+</html>
